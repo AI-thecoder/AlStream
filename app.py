@@ -7,7 +7,7 @@ from transformers import pipeline
 # pipe = pipeline("image-to-text", model="Salesforce/blip-image-captioning-large")
 
 st.title("HuggingFace App 🤗")
-uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png", "webp"])
 # Check if an image was uploaded
 if uploaded_file is not None:
     # Display the selected image
