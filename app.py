@@ -19,10 +19,43 @@ if uploaded_file is not None:
 #result=response[0].get('label')
 
 
+
+
+import requests
+
+API_URL = "https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-base"
+API_TOKEN='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'
+headers = {"Authorization": f"Bearer {API_TOKEN}"}
+
+def query(filename):
+    with open(filename, "rb") as f:
+        data = f.read()
+    response = requests.post(API_URL, headers=headers, data=data)
+    return response.json()
+
+
+
+
+
+
+
+
+
+
+
+from tempfile import NamedTemporaryFile
+
+
+
+
+
 from PIL import Image
 
 if uploaded_file is not None:
-  image = Image.open(uploaded_file)
-  # response = pipe(image)[0].get('generated_text')
-  #st.text(f"The sentiment analysis for ` {user_input} ` is: {result}")
-  # st.text({response})
+  # image = Image.open(uploaded_file)
+  responce = ''
+  with NamedTemporaryFile(dir='.', suffix='.jpeg') as f:
+    f.write(uploaded_file.getbuffer())
+    response = query(f.name)
+    # st.text(f"The sentiment analysis for ` {user_input} ` is: {result}")
+  st.text(response[0]["generated_text"])
