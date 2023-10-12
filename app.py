@@ -4,7 +4,7 @@ import streamlit as st
 # Use a pipeline as a high-level helper
 from transformers import pipeline
 
-pipe = pipeline("image-to-text", model="Salesforce/blip-image-captioning-large")
+# pipe = pipeline("image-to-text", model="Salesforce/blip-image-captioning-large")
 
 st.title("HuggingFace App 🤗")
 uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
@@ -23,6 +23,6 @@ from PIL import Image
 
 if uploaded_file is not None:
   image = Image.open(uploaded_file)
-  response = pipe(image)[0].get('generated_text')
+  # response = pipe(image)[0].get('generated_text')
   #st.text(f"The sentiment analysis for ` {user_input} ` is: {result}")
-  st.text({response})
+  # st.text({response})
