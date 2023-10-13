@@ -1,2 +1,5 @@
 tensorflow
 transformers
+plotly
+pandas
+numpy
