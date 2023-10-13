@@ -38,8 +38,12 @@ with module1_tab:
             f.write(uploaded_file.getbuffer())
             response = query(f.name)
             # st.text(f"The sentiment analysis for ` {user_input} ` is: {result}")
-        st.text(response[0]["generated_text"])
-
+        try:
+            st.text(response[0]["generated_text"])
+        except Exception as e:
+            st.text(str(e))
+        
+       
 with module2_tab:
     import requests
 
