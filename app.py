@@ -160,9 +160,9 @@ with plot_correlation_tab:
         try:
             df = pd.read_csv(uploaded_file)
             st.dataframe(df)
-            st.data_editor(df)
+            # st.data_editor(df)
             st.plotly_chart(plot_correlation(df), theme="streamlit")
-            # st.plotly_chart(plot_histogram_matrix(df), theme="streamlit")
+            st.plotly_chart(plot_histogram_matrix(df), theme="streamlit")
         except Exception as e:
             st.text(str(e))
     
