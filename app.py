@@ -1,10 +1,11 @@
 import streamlit as st
-from transformers import pipeline
+# from transformers import pipeline
 import requests
 from tempfile import NamedTemporaryFile
 from PIL import Image
 import pandas as pd
 import numpy as np
+import random
 
 # Data Visualization
 # import plotly.express as px
@@ -94,7 +95,7 @@ def plot_histogram_matrix(df):
 
     return fig
 
-home_tab, module1_tab, module2_tab,  plot_correlation_tab = st.tabs(["home", "Image Captioning", "Description to Image", "Plot Correlation"])
+home_tab, module1_tab, module2_tab,  plot_correlation_tab, api_call_tab = st.tabs(["home", "Image Captioning", "Description to Image", "Plot Correlation", "API Call"])
 with module1_tab:
     # pipe = pipeline("image-to-text", model="Salesforce/blip-image-captioning-large")
     # st.title("Image Captioning App")
@@ -167,3 +168,31 @@ with plot_correlation_tab:
             st.text(str(e))
     
     
+with api_call_tab:
+    for i in random.sample(range(1, 101), 3):
+        # api_url = "https://jsonplaceholder.typicode.com/todos/"+str(i)
+        
+        api_url = "https://picsum.photos/id/" + str(i) + "/info"
+        response = requests.get(api_url)
+        data = response.json()
+        st.image(data["download_url"])
+    # st.json(data)
+    # st.write(data['title'])
+    # st.write(data['completed'])
+    # st.write(response.json())
+    # st.write(response.status_code)
+    # st.write(response.headers)
+    # st.write(response.text)
+    # api_url = "https://jsonplaceholder.typicode.com/todos/1"  # Replace with your API endpoint
+    # response = requests.get(api_url)
+
+    # if response.status_code == 200:
+    #     data = response.json()
+    #     df = pd.DataFrame(data)
+        
+    #     output_file = "api_data.csv"  # Choose a filename for your CSV file
+    #     df.to_csv(output_file, index=False)  # Export the DataFrame to a CSV file
+
+    #     print(f"Data exported to {output_file}")
+    # else:
+    #     print("API request failed with status code:", response.status_code)
