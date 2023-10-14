@@ -6,6 +6,10 @@ from PIL import Image
 import pandas as pd
 import numpy as np
 import random
+import dicomreader as dcmrdr
+import SimpleITK as sitk
+import matplotlib.pyplot as plt
+
 
 # Data Visualization
 # import plotly.express as px
@@ -19,10 +23,11 @@ import plotly.figure_factory as ff
 
 plotly_template = 'simple_white'
 
-def plot_correlation(df):
+def plot_correlation(org_df):
     '''
     This function is resposible to plot a correlation map among features in the dataset
     '''
+    df = org_df.select_dtypes(include='number')
     corr = np.round(df.corr(), 2)
     mask = np.triu(np.ones_like(corr, dtype = bool))
     c_mask = np.where(~mask, corr, 100)
@@ -95,7 +100,7 @@ def plot_histogram_matrix(df):
 
     return fig
 
-home_tab, module1_tab, module2_tab,  plot_correlation_tab, api_call_tab = st.tabs(["home", "Image Captioning", "Description to Image", "Plot Correlation", "API Call"])
+home_tab, module1_tab, module2_tab,  plot_correlation_tab, api_call_tab, dicom_viewer = st.tabs(["home", "Image Captioning", "Description to Image", "Plot Correlation", "API Call", "Dicom Viewer"])
 with module1_tab:
     # pipe = pipeline("image-to-text", model="Salesforce/blip-image-captioning-large")
     # st.title("Image Captioning App")
@@ -174,8 +179,11 @@ with api_call_tab:
         
         api_url = "https://picsum.photos/id/" + str(i) + "/info"
         response = requests.get(api_url)
-        data = response.json()
-        st.image(data["download_url"])
+        try:
+            data_ = response.json()
+            st.image(data_["download_url"])
+        except Exception as e:
+            st.text(str(e))
     # st.json(data)
     # st.write(data['title'])
     # st.write(data['completed'])
@@ -196,3 +204,31 @@ with api_call_tab:
     #     print(f"Data exported to {output_file}")
     # else:
     #     print("API request failed with status code:", response.status_code)
+
+with dicom_viewer:
+    st.title('DieSitCom')
+    dirname = dcmrdr.dir_selector()
+    if dirname is not None:
+        try:
+            reader = sitk.ImageSeriesReader()
+            dicom_names = reader.GetGDCMSeriesFileNames(dirname)
+            reader.SetFileNames(dicom_names)
+            reader.LoadPrivateTagsOn()
+            reader.MetaDataDictionaryArrayUpdateOn()
+            data = reader.Execute()
+            img = sitk.GetArrayViewFromImage(data)
+        
+            n_slices = img.shape[0]
+            slice_ix = st.slider('Slice', 0, n_slices, int(n_slices/2))
+            output = st.radio('Output', ['Image', 'Metadata'], index=0)
+            if output == 'Image':
+                fig = dcmrdr.plot_slice(img, slice_ix)
+                st.pyplot(fig)
+            else:
+                metadata = dict()
+                for k in reader.GetMetaDataKeys(slice_ix):
+                    metadata[k] = reader.GetMetaData(slice_ix, k)
+                df = pd.DataFrame.from_dict(metadata, orient='index', columns=['Value'])
+                st.dataframe(df)
+        except RuntimeError:
+            st.text('This does not look like a DICOM folder!')

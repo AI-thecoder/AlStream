@@ -3,3 +3,5 @@ transformers
 plotly
 pandas
 numpy
+SimpleITK
+matplotlib
